@@ -1,0 +1,20 @@
+# Build output (the redistributable build is committed under bin/ instead)
+Release/
+Debug/
+x64/
+.vs/
+
+# VS / MSBuild per-user and intermediate files
+*.user
+*.suo
+*.obj
+*.pdb
+*.ipdb
+*.iobj
+*.tlog
+*.exp
+*.lib
+*.ilk
+*.res
+*.recipe
+*.lastbuildstate
