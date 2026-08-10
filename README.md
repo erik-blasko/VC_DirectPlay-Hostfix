@@ -40,6 +40,32 @@ All of the game's functions and globals are located by byte-signature, so the
 same binary works against both the retail `vietcong.exe` and the editor
 (`dev_editor.exe`).
 
+## Also: your server shows up in the internet list
+
+A Vietcong server tells the GameSpy master which port to probe it on
+(`\heartbeat\<queryport>\`). Windows' DirectPlay NAT helper opens a hole for
+DirectPlay's own socket, but it knows nothing about that query socket — so a
+host behind a home router gets listed and then never answers, and the server
+looks dead to everyone browsing.
+
+This shim asks the very same Windows component to open the query port as well,
+reading the port number out of the server's own heartbeat (so a custom port
+works without any configuration). The mapping is released when the server shuts
+down, and expires by itself within an hour if the process is killed. Where
+there is no UPnP router — or no DirectPlay, as on Wine — nothing happens at all.
+
+Set `DPSHIM_NO_UPNP=1` before launching to turn this off.
+
+If your router has UPnP disabled, or you are behind more than one NAT, forward
+these to the machine hosting the game instead:
+
+| port | protocol | what for |
+|---|---|---|
+| 15425 | UDP | GameSpy query — without it the server is listed but unreachable |
+| 5425 | UDP + TCP | DirectPlay 8 — the game itself |
+
+(Those are the defaults; if you changed the server's port, adjust accordingly.)
+
 ## Install
 
 1. Download / extract this folder somewhere.
@@ -76,5 +102,3 @@ Licensed under the **GNU LGPL v2.1 or later** (see `LICENSE.txt`).
 - In-process hooking uses [MinHook](https://github.com/TsudaKageyu/minhook)
   by Tsuda Kageyu (BSD-2-Clause; see `minhook/LICENSE.txt`).
 
-The fix was developed by reverse-engineering the Vietcong networking code; see
-`CHANGES.md` for the version history.

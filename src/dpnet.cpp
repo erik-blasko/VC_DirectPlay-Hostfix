@@ -19,6 +19,7 @@
 
 #include "log.hpp"
 #include "selfjoin_hook.hpp"
+#include "upnp_ports.hpp"
 #include "version.h"
 
 typedef HRESULT (WINAPI *DllGetClassObject_t)(REFCLSID, REFIID, LPVOID*);
@@ -57,19 +58,25 @@ static void EnsureInit()
 		g_initDone = true;
 		LoadRealDpnet();
 		SelfJoinHook_Install();
+		UPnPPorts_Install();
 	}
 	LeaveCriticalSection(&g_lock);
 }
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
-	(void)lpvReserved;
 	if (fdwReason == DLL_PROCESS_ATTACH)
 	{
 		InitializeCriticalSection(&g_lock);
 		DisableThreadLibraryCalls(hinstDLL);
 		shim_log("dpnet host-fix shim v%s loaded into pid %lu",
 			SHIM_VERSION_STR, (unsigned long)GetCurrentProcessId());
+	}
+	else if (fdwReason == DLL_PROCESS_DETACH)
+	{
+		/* lpvReserved != NULL means the process is exiting; in that case we
+		 * must not do real work here (loader lock, other DLLs may be gone). */
+		UPnPPorts_Shutdown(lpvReserved != NULL);
 	}
 	return TRUE;
 }

@@ -10,6 +10,7 @@
     <ClCompile Include="src\dpnet.cpp" />
     <ClCompile Include="src\log.cpp" />
     <ClCompile Include="src\selfjoin_hook.cpp" />
+    <ClCompile Include="src\upnp_ports.cpp" />
     <ClCompile Include="minhook\src\buffer.c" />
     <ClCompile Include="minhook\src\hook.c" />
     <ClCompile Include="minhook\src\trampoline.c" />
@@ -20,6 +21,7 @@
     <None Include="src\dpnet.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\upnp_ports.hpp" />
     <ClInclude Include="src\version.h" />
   </ItemGroup>
   <ItemGroup>
